@@ -1,0 +1,47 @@
+\documentclass[12pt]{report}
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{esvect}
+\usepackage[sorting=none]{biblatex}
+\usepackage{biblatex}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage[normalem]{ulem}
+\usepackage{tocloft}
+\renewcommand{\cftpartleader}{\cftdotfill{\cftdotsep}} % for parts
+\renewcommand{\cftchapleader}{\cftdotfill{\cftdotsep}} % for chapters
+
+\DeclarePairedDelimiter\abs{\lvert}{\rvert}%
+\DeclarePairedDelimiter\norm{\lVert}{\rVert}%
+
+% Swap the definition of \abs* and \norm*, so that \abs
+% and \norm resizes the size of the brackets, and the 
+% starred version does not.
+\makeatletter
+\let\oldabs\abs
+\def\abs{\@ifstar{\oldabs}{\oldabs*}}
+%
+\let\oldnorm\norm
+\def\norm{\@ifstar{\oldnorm}{\oldnorm*}}
+\makeatother
+
+
+
+\title{Big Fish\\3D Simulation of web performance}
+\author{Tacit Knowledge\\Ahmed Layouni}
+\date{2012-2013}
+
+\begin{document}
+
+\maketitle
+\newpage
+\tableofcontents
+\newpage
+
+\input{Introduction}
+\input{chapter2}
+\input{chapter3}
+\input{chapter4}
+
+
+\end{document}
