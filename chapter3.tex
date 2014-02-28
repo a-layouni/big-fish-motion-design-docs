@@ -1,4 +1,4 @@
-% !TEX root =report.tex
+% !TEX root =big-fish.tex
 \chapter{Collision prediction}
 Movement trajectories have been designed to intersect with the goal of tolerating collisions to happen so that a collision prediction correlated to a collision avoidance algorithms can operate and add an interactive touch preventing the motion from repeating itself and making a pleasant animation that is interesting to watch.\\
 
@@ -38,7 +38,7 @@ Figure~\ref{fig:intersection} lists all the data encapsulated under the Intersec
 In this section I will go through each field listed above.
 
 \subsubsection{Curvilinear abscissas ($\theta_1$, $\theta_2$)}
-The intersections, as opposed to what may come in mind in the first intuition, are not stored as 3D points, if they were they would need to be recalculated every time a fish avoids a collision by changing the radius of its trajectory (more details in chapter ~\ref{chap:avoidance}). To prevent this, and also because the movement is managed by $\theta_Y$ (the curvilinear abscissa of a fish within its circular trajectory), it is more efficient to define an intersection as a curvilinear abscissa as well. Proceeding thereby will make it easier to determine if a fish is close, leaving or going towards an intersection based on its curvilinear abscissa and the sign of its angular move step $\delta _{y}$.\\
+The intersections, as opposed to what may come in mind in the first intuition, are not stored as 3D points, if they were they would need to be recalculated every time a fish avoids a collision by changing the radius of its trajectory (more details in chapter ~\ref{chap:avoidance}). To prevent this, and also because the movement is managed by $\theta_Y$ (the curvilinear abscissa of a fish within its circular trajectory), it is more efficient to define an intersection as a curvilinear abscissa as well. Proceeding thereby will make it easier to determine if a fish is close, leaving or going towards an intersection based on its curvilinear abscissa and the sign of its angular velocity $\delta _{y}$.\\
 
 Note that an intersection has two different curvilinear abscissas $\theta_1$ and $\theta_2$ each being relative to the corresponding intersecting trajectory.\\
 
@@ -324,7 +324,7 @@ Determine which fish will reach A$_i$ first. Note that for better accuracy in th
 \begin{gather*}
 T_1 = \frac{\abs{\theta_{F1} - \theta_{A1}}}{\abs{\delta_{Y1}}} \;\;\;,\;\;\; T_2 = \frac{\abs{\theta_{F2} - \theta_{A2}}}{\abs{\delta_{Y2}}} 
 \end{gather*}
-Where $\theta_{Fi}$ is the curvilinear abscissa of the corresponding fish's front, $\theta_{Ai}$ is the curvilinear abscissa of $A_i$ and $\delta_{Yi}$ is the angular move step per frame representing the angular velocity. Let's call fish$_1$ the fish that will arrive first.
+Where $\theta_{Fi}$ is the curvilinear abscissa of the corresponding fish's front, $\theta_{Ai}$ is the curvilinear abscissa of $A_i$ and $\delta_{Yi}$ denoting the angular velocity. Let's call fish$_1$ the fish that will arrive first.
 
 \subsubsection{Second step}
 Guarantee that fish$_1$'s back will also arrive to A$_1$ before fish$_2$'s front reaches A$_2$. This could be investigated by applying the same logic described above.

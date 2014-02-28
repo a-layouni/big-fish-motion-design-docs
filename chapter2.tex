@@ -1,4 +1,4 @@
-% !TEX root =report.tex
+% !TEX root =big-fish.tex
 \chapter{Movement design}
 The goal of this chapter is to explain the raw motion design, based on which the collision prediction and avoidance algorithms will be established.\\
 
@@ -116,7 +116,7 @@ R . \cos{\theta_{y}}
 \]
 Where R is the radius of the circular trajectory and $\theta_{y}$ denoting the curvilinear abscissa. Applying the conversion matrix obtained by combining $\overrightarrow{X}$, $\overrightarrow{Y}$ and $\overrightarrow{Z}$ would convert the coordinates relatively to $(\overrightarrow{x}, \overrightarrow{y}, \overrightarrow{z})$.\\
 
-Having all the ingredients to calculate a fish's absolute coordinates depending on its curvilinear abscissa $\theta_{y}$ within it's circular trajectory, the movement logic for a fish in the swimming state is implemented by adding an angular move step $\delta_{y}$ to $\theta_{y}$ each new frame. $\delta_y$ gets calculated as follows:
+Having all the ingredients to calculate a fish's absolute coordinates depending on its curvilinear abscissa $\theta_{y}$ within it's circular trajectory, the movement logic for a fish in the swimming state is implemented by adding its angular velocity $\delta_{y}$ to $\theta_{y}$ each new frame. $\delta_y$ gets calculated as follows:
 \[
 \delta_y = \pm \frac{Cste}{R \times (response\; time)}
 \]
