@@ -1,38 +1,17 @@
 % !TEX root =big-fish.tex
 \chapter{Movement design}
-The goal of this chapter is to explain the raw motion design, based on which the collision prediction and avoidance algorithms will be established.\\
+The goal of this chapter is to explain the raw motion design (without the interactive aspect) based on which the collision prediction and avoidance algorithms will be established.\\
 
-The velocity of a fish is meant to represent its site's response time; in order to clearly notice it, circular trajectories have been chosen to define the nature of the movement.\\
-
-However the trajectory might change depending on a fish's state. For this reason, a fish aggregates the motion logic to its state thereby applying the strategy design pattern.\\
-
-Note that the rest of this section assumes the reader to be familiar with Euler rotations which are a corner stone in 3D development. Figure ~\ref{fig:euler-rotations} can help understanding the rotations mechanism; it illustrates step by step the application of Euler rotations given ZXY as Euler order: 
-
-\begin{figure}[H]
-   \centering
-   \includegraphics[scale=0.65]{figures/euler.png}
-   \caption{Euler Rotations}
-   \label{fig:euler-rotations}
-\end{figure}
-
-The 4 snapshots illustrated in figure ~\ref{fig:euler-rotations} represent:
-\begin{itemize}
-\item The axis initial states before any rotation gets applied.
-\item The axis after applying a rotation $\theta _{z} $ around the Z axis.
-\item The axis after applying $\theta _{z}$ followed by $\theta _{x}$.
-\item The axis after applying $\theta _{z}$ followed by $\theta _{x}$ followed by $\theta _{y}$.
-\end{itemize}
-
-The rest of the chapter describes the different states a fish might go through.
+Note that this document assumes the reader to be familiar with Euler rotations which are a corner stone in 3D development. That said, the nature of the movement in the scene is mainly circular with some exceptions triggered by a fish's change of state; this chapter describes the different states a fish might take.
 
 \section{Swimming state:}
 \label{subsec:swimmingstate}
 
-The swimming state is where a fish spends most of its time. Even when a particular event triggers a change of state, as soon as the cause disappears, the fish immediately returns to the swimming state.\\
+The swimming state is where a fish spends most of its time. Even when an event triggers a change of state, as soon as the cause disappears, the fish gets back to the swimming state.\\
 
-The movement nature of the swimming state is circular; the radius and the center of the circle is common to all the fishes in the scene. This means that all fishes are swimming within the same sphere surface. However to create diversity in the movement, the planes holding each fish's trajectory are different. Considering YXZ as the Euler rotation order, all the trajectories' planes have the same $\theta _{x}$ rotation defined as a constant to represent the planes' inclination, whereas $\theta _{y}$ rotations are different per fish. The difference is obtained by adding a $\Delta \varphi$ deviation whenever a new fish gets loaded.\\
+The movement nature of the swimming state is circular; the radius and the center of the circle is common to all the fishes in the scene. This means that all fishes are swimming within the same sphere surface. However to create diversity in the movement, the planes holding each fish's trajectory are different. Considering YXZ as the Euler rotation order, all the trajectories' planes have the same $\theta _{x}$ rotation defined as a configurable parameter denoting the planes' inclination, whereas $\theta _{y}$ rotations are different per fish. The difference is obtained by adding a $\Delta \varphi$ deviation whenever a new fish gets loaded.\\
 
-A plane's orthonormal coordinate system is defined by two orthonormal axis and a center. The center is common to all the trajectories' planes i.e. the center of the scene, whereas calculating the axis coordinates required some mathematical analysis that led to the following results:\\
+A plane's orthonormal coordinate system is defined by two orthonormal axis and a center. The center is common to all the trajectories' planes i.e. the center of the scene; the axis coordinates required a mathematical analysis that led to the following results:\\
 
 Let $\overrightarrow{X_{1}}$, $\overrightarrow{X_{2}}$, $\overrightarrow{X_{3}}$ be the rotated axis, where $X_{1}X_{2}X_{3}$ denotes Euler order, and let $\theta_{1}$, $\theta_{2}$ and $\theta_{3}$ be the corresponding Euler rotations. If we consider ($\overrightarrow{x_{1}}$, $\overrightarrow{x_{2}}$, $\overrightarrow{x_{3}}$) as the reference coordinate system, $\overrightarrow{X_{1}}$, $\overrightarrow{X_{2}}$ and $\overrightarrow{X_{3}}$ coordinates can be obtained by applying the following formula:
 \[
@@ -114,16 +93,16 @@ R . \sin{\theta_{y}} \\
 R . \cos{\theta_{y}}
 \end{pmatrix}_{(\overrightarrow{X}, \overrightarrow{Y}, \overrightarrow{Z})}
 \]
-Where R is the radius of the circular trajectory and $\theta_{y}$ denoting the curvilinear abscissa. Applying the conversion matrix obtained by combining $\overrightarrow{X}$, $\overrightarrow{Y}$ and $\overrightarrow{Z}$ would convert the coordinates relatively to $(\overrightarrow{x}, \overrightarrow{y}, \overrightarrow{z})$.\\
+Where R is the radius of the circular trajectory and $\theta_{y}$ denoting the curvilinear abscissa. Applying the conversion matrix CM obtained by combining $\overrightarrow{X}$, $\overrightarrow{Y}$ and $\overrightarrow{Z}$ would convert the coordinates relatively to $(\overrightarrow{x}, \overrightarrow{y}, \overrightarrow{z})$.\\
 
-Having all the ingredients to calculate a fish's absolute coordinates depending on its curvilinear abscissa $\theta_{y}$ within it's circular trajectory, the movement logic for a fish in the swimming state is implemented by adding its angular velocity $\delta_{y}$ to $\theta_{y}$ each new frame. $\delta_y$ gets calculated as follows:
+Having all the ingredients to calculate a fish's absolute coordinates depending on its curvilinear abscissa $\theta_{y}$ within it's circular trajectory, the movement logic for a fish in the swimming state is implemented by adding its angular velocity $\delta_{y}$ to $\theta_{y}$ each new frame. $\delta_y$ formula is the following:
 \[
 \delta_y = \pm \frac{Cste}{R \times (response\; time)}
 \]
-Note that $\delta_{y}$ is inversely proportional to the radius R, which makes sense since a reduction of radius should result in faster round turns executions, and vice versa. Furthermore $\delta_y$ is also inversely proportional to the corresponding website's response time, which means the smaller the response time is, the greater $\delta_{y}$ gets and thus the faster moves the fish. ``$Cste$" represents a configuration parameter that allows to tweak the responsiveness of the animation, while the sign (negative or positive) directing a fish's orientation gets assigned randomly. Note that $\delta_{y}$ is also used to adjust the frequency of the animation of a fish's tail proportionally to its speed.\\
+Notice that $\delta_{y}$ is inversely proportional to the radius R, which makes sense since a reduction of radius should result in faster round turns executions, and vice versa. Furthermore $\delta_y$ is also inversely proportional to the corresponding website's response time, which means the smaller the response time is, the greater $\delta_{y}$ gets and thus the faster moves the fish. ``$Cste$" represents a configuration parameter that allows to tweak the responsiveness of the animation, while the sign (negative or positive) directing a fish's orientation gets assigned randomly. Note that $\delta_{y}$ is also used to adjust the frequency of the animation of a fish's tail proportionally to its speed.\\
 
 
-Another issue to consider, is the orientation of fishes. The orientation defines the direction a fish should point to while swimming accordingly with its movement. In other words a fish should not be moving in a direction while pointing (looking) to another direction. The right orientation can be obtained by making a fish look at its next position. In mathematical terms, if we consider M as a fish's current position, and $M'$ as the immediate next position, the orientation $\overrightarrow{o}$ should match $\overrightarrow{MM'}$. $M'$ coordinates can be obtained by applying the following formula:
+Another issue to consider, is the orientation of fishes. The orientation defines the direction a fish should point to while swimming accordingly with its movement. In other words a fish should not be moving in a direction while pointing (looking) to another direction. The orientation can be obtained by making a fish look at its next position. In mathematical terms, if we consider M as a fish's current position, and $M'$ as the immediate next position, the orientation $\overrightarrow{o}$ should match $\overrightarrow{MM'}$. $M'$ coordinates can be obtained by applying the following formula:
 \[
 \begin{pmatrix}
 R . \sin{(\theta_{y} + \delta_y)} \\
@@ -146,7 +125,7 @@ A fish switches to the dying state when the corresponding website stops respondi
 \end{enumerate}
 
 \section{Dead state}
-Once a dying fish reaches the water surface, it immediately switches its state to the Dead state during which the fish keeps oscillating vertically in the surface to simulate the floating motion.
+Once a dying fish reaches the water surface, it switches to the Dead state during which the fish keeps oscillating vertically in the surface to simulate the floating motion.
 
 \section{Reviving state}
 A dead fish keeps listening to its availability status; as soon as it changes to ``Online", the fish immediately switches to  the Reviving state. The Reviving state can be thought of as a transitional phase towards the Swimming state. It runs through 4 phases:

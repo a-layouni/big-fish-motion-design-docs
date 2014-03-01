@@ -8,7 +8,7 @@ This chapter explains in details the collision prediction mechanism.
 
 \section{Collision prevention setup}
 \label{sec:setup}
-The collision prediction and avoidance algorithms need to compute important parameters only once at load time to cache them for ulterior use when the animation starts which will prevent re-performing the same logic each frame and gain in terms of performance.\\
+The collision prevention setup computes important parameters only once at load time and caches them for ulterior use by the collision prediction and avoidance algorithms to prevent re-performing the same logic each frame and gain in terms of performance.\\
 
 The list of operations applied to each loaded fish during the collision prevention setup includes:
 
@@ -16,11 +16,11 @@ The list of operations applied to each loaded fish during the collision preventi
 
 \item Add a movement listener to the fish, so that whenever its position evolves as it moves, the collision prediction algorithm gets invoked.
 
-\item Compute trajectories intersections; will be explained in details under sub-section ~\ref{subsec:intersections}.
+\item Compute trajectories intersections; see sub-section ~\ref{subsec:intersections}.
 
-\item Determine which fishes are sharing the same trajectory if any. Given all trajectories are circular having the same radius and center, 2 fishes share the same trajectory if they circulate within the same plane. 2 trajectories share the same plane if they share the same relative rotated Y axis; the latter being normal to a trajectory's plane.
+\item Determine which fishes are sharing the same trajectory if any. Given all trajectories are circular having the same radius and center, 2 fishes share the same trajectory if they circulate within the same plane. 2 trajectories share the same plane if they share the same relative rotated Y axis, the latter being normal to a trajectory's plane.
 
-\item Compute the ``unit grid box'' size based on the fishes' bounding box. Briefly explained, the proximity collision prediction algorithm divides the scene in a network of big grid boxes which will be cleared and repopulated by fishes each new frame. For better performance these unit grid boxes should be big enough to fully carry the biggest fish in the scene while considering a margin. More details about calculating the unit grid box will be explained under sub-section ~\ref{subsec:ugb}.
+\item Compute the ``unit grid box'' size based on the fishes' bounding box. Briefly explained, the proximity collision prediction algorithm divides the scene in a network of big grid boxes which will be cleared and repopulated by fishes each new frame. For better performance these unit grid boxes should be big enough to fully carry the biggest fish in the scene while considering a margin; further details under sub-section ~\ref{subsec:ugb}.
 
 \end{itemize}
 
@@ -58,7 +58,7 @@ A mathematical analysis led to the following $\theta_1$ and $\theta_2$ formulas:
 \right.
 \]
 
-Where $(X_{ix}, X_{iy}, X_{iz})$, and $(Z_{ix}, Z_{iy}, Z_{iz})$ are the respective coordinates of the rotated axis $\overrightarrow{X_i}$ and $\overrightarrow{Z_i}$ defining trajectory$_i$'s plane (rotated axis formulas were given in section ~\ref{subsec:swimmingstate}). Note that the sign of $\theta_1$ gets determined by processing further equations which I omitted on purpose to avoid overloading this section. It is to mention also that the equations listed above have requirements that are always verified given the trajectories design.\\
+Where $(X_{ix}, X_{iy}, X_{iz})$, and $(Z_{ix}, Z_{iy}, Z_{iz})$ are the respective coordinates of the rotated axis $\overrightarrow{X_i}$ and $\overrightarrow{Z_i}$ defining trajectory$_i$'s plane (rotated axis formulas were given in section ~\ref{subsec:swimmingstate}). Note that the sign of $\theta_1$ gets determined by processing further equations which were omitted to alleviate. It is to mention also that the equations listed above have requirements that are always verified given the trajectories design.\\
 
 In order to visually check if the intersections were correctly calculated, a visual test has been implemented to draw the intersection of every couple of different trajectories, and check whether they are accurately located:
 
@@ -100,7 +100,7 @@ $\alpha$ can be defined as  $\widehat{(\overrightarrow{T_1} \; , \; \overrightar
 \frac{\displaystyle \overrightarrow{T_1} \; . \; \overrightarrow{T_2}} {\displaystyle \| \overrightarrow{T_1} \| \; . \; \| \overrightarrow{T_2} \|} 
 \right)
 \] \\
-Further processing is needed to determine $\alpha$'s sign, but will be omitted to alleviate this section.
+Further processing is needed to determine $\alpha$'s sign, but will be omitted to alleviate.
 
 \subsubsection{Reference to the intersecting fish}
 
@@ -108,7 +108,7 @@ The avoidance state loops through the avoiding fish close intersections to predi
 
 
 \subsubsection{Intersections modeled as circular bidirectional linked list nodes }
-For better performance, the avoidance algorithm needs to efficiently loop over neighbor intersections in both directions (clockwise and counter colockwise) given a close intersection. A bidirectional circular linked list has been adopted for this purpose. Figure~\ref{fig:linkedlist} gives a preview of the relationships between intersections:
+For better performance, the avoidance algorithm needs to efficiently loop over neighbor intersections in both directions (clockwise and counter colockwise) given any close intersection. A bidirectional circular linked list has been adopted to fulfill this need. Figure~\ref{fig:linkedlist} gives a preview of the relationships between intersections:
 
 \begin{figure}[H]
    \centering
@@ -139,14 +139,14 @@ When a fish avoids a collision it switches the radius of its trajectory to a sma
 
 The proximity collision prediction is the first layer of the prediction algorithm, it filters fishes that are good candidates for imminent collisions and forwards them to the kinetics based algorithm for further processing. The main purpose of using the proximity prediction is to minimize invoking the kinetics based algorithm as possible given its complexity (see section~\ref{sec:dynamic.prediction}).\\
 
-If we consider a three dimensional grid of big boxes serving as a large scaled coordinate system, the idea is to perform the following operations whenever a movement listener gets notified by a change of a fish's location:
+If we consider a three dimensional grid of big boxes serving as a large scaled coordinate system to the scene, the idea is to perform the following operations whenever a movement listener gets notified by a change of a fish's location:
 \begin{itemize}
 
 \item Calculate the bounding box of the fish, considering the new position, the scale, and Euler rotations.
 
 \item Add margins to the new bounding box volume. The margins serve as the security distance that separates two fishes, lower than which the kinetics based prediction algorithm gets invoked.
 
-\item Convert the position and dimensions of the bounding box to the large scaled coordinate system; let's denote the result ``normalized bounding box"; given the large scaled coordinate system unit is big enough to carry the biggest fish in the scene with a margin, the normalized bounding box volume will never exceed a maximum of 8 unit boxes (i.e. when a fish overlaps a corner of a normalized unit box which implies overlapping the 8 normalized unit boxes sharing that corner), but can be a minimum of only one unit box. A performance test has been recorded in this regard (see section ~\ref{subsec:performancerec}).
+\item Convert the position and dimensions of the bounding box to the large scaled coordinate system; call the result ``normalized bounding box"; given the large scaled coordinate system unit is big enough to carry the biggest fish in the scene with a margin, the normalized bounding box volume will never exceed a maximum of 8 unit boxes (i.e. when a fish overlaps a corner of a normalized unit box which implies overlapping the 8 normalized unit boxes sharing that corner), but can be a minimum of only one unit box. A performance test has been recorded in this regard (see section ~\ref{subsec:performancerec}).
 
 \item Use an associative array to determine which fishes are sharing unit boxes as follows:
 
@@ -227,7 +227,7 @@ Which gives an average of $(1 \times 0.296 + 2 \times 0.4785 + 4 \times 0.2008 +
 Each frame, one fish populates 2.253 unit boxes, from which only 15.5\% trigger collision verifications. Given the test was run with 11 fishes in the scene, we obtain in average $(11 \times 2.253 \times 0.155) \approx $ \textbf{3.84} collision verifications per frame, compared to $(\sum\limits_{i=2}^{11} i) =$ \textbf{65} collision verification if a nested loop checking for every couple fishes has been adopted.
 
 \subsection{Appropriate states for avoidance}
-When a fish avoids a collision, it reduces the radius of its circular trajectory leaving enough margin to prevent any overlapping. However in order to keep the movement look natural, the avoiding fish has to follow a link trajectory towards the smaller radius trajectory. A fish's state is appropriate for avoidance when it's either in the swimming state, or in the avoiding state but not in a link trajectory (see chapter~\ref{chap:avoidance} for more details).\\
+When a fish avoids a collision, it reduces the radius of its circular trajectory leaving enough margin to prevent any overlapping. However in order to keep the movement look natural, the avoiding fish follows a link trajectory towards the smaller radius trajectory. A fish's state is appropriate for avoidance when it's either in the swimming state, or in the avoiding state but not in a link trajectory (see chapter~\ref{chap:avoidance} for more details).\\
 
 The states Dying, Reviving, Dead, and Resizing are not appropriate for avoidance. When a fish is in one of these states (which is very rare) collisions may happen.\\
 
